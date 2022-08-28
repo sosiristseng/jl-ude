@@ -4,5 +4,5 @@
 format: jb-book
 root: index
 chapters:
-  - file: markdown
-  - file: plots
+  - file: 01-heat
+  - file: 02-brusselator

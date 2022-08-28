@@ -1,6 +1,10 @@
 [deps]
-IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
-PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
+DomainSets = "5b8099bc-c8ec-5219-889f-1d9e522a28bf"
+MethodOfLines = "94925ecb-adb7-4558-8ed8-f975c56a0bf4"
+ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
+NonlinearSolve = "8913a72c-1f9b-4ce2-8d82-65094dcecaec"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 
 [compat]
 julia = "1.8"
