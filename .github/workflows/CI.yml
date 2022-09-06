@@ -37,9 +37,9 @@ jobs:
       fail-fast: false
       matrix:
         notebook:
-          - index
-          - 01-heat
-          - 02-brusselator
+          - 01-fromode
+          - 02-heat
+          - 03-brusselator
 
     runs-on: ubuntu-latest
     steps:

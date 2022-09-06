@@ -4,5 +4,6 @@
 format: jb-book
 root: index
 chapters:
-  - file: 01-heat
-  - file: 02-brusselator
+  - file: 01-fromode
+  - file: 02-heat
+  - file: 03-brusselator
