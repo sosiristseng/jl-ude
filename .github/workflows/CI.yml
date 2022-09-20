@@ -40,11 +40,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Notebooks need to be executed
+        # Notebooks to be executed
         notebook:
-          - 01-manual
-          - 02-heat
-          - 03-brusselator
+          - pde-01-manual
+          - pde-02-heat
+          - pde-03-brusselator
+          - ude-01-firstexample
+          - ude-02-multishooting
+          - ude-03-neuralpde-ode
+          - ude-04-poission
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
