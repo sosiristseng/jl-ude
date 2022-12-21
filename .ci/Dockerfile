@@ -1,4 +1,4 @@
-FROM python:3.11.0-slim
+FROM python:3.11.1-slim
 
 # Supress warning emitted by parallel
 ENV LANG C.UTF-8
