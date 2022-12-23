@@ -82,7 +82,7 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - run: pip install -r jupyter-book
+      - run: pip install jupyter-book
       - name: Download notebooks
         uses: actions/download-artifact@v3
         with:
