@@ -13,19 +13,21 @@ on:
 jobs:
   update-manifest:
     runs-on: ubuntu-latest
+    container:
+      image: julia:1.8.5
+      env:
+        JULIA_PKG_PRECOMPILE_AUTO: '0'
     steps:
+      - name: Install Git
+        run: apt-get update && apt-get install -y --no-install-recommends git
       - name: Checkout
         uses: actions/checkout@v3
       - name: Update Julia dependencies
-        uses: addnab/docker-run-action@v3
-        with:
-          image: julia:1.8.5
-          options: -v ${{ github.workspace }}:/work -e JULIA_PKG_PRECOMPILE_AUTO=0
-          run: |
-            julia --color=yes --project=/work --threads=auto -e 'import Pkg; Pkg.update()'
+        run: julia --color=yes --project=@. --threads=auto -e 'import Pkg; Pkg.update()'
       # Authenticate using a custom GitHub APP
       # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#authenticating-with-github-app-generated-tokens
-      - uses: tibdex/github-app-token@v1
+      - name: Generate token
+        uses: tibdex/github-app-token@v1
         id: generate-token
         with:
           app_id: ${{ secrets.APP_ID }}
@@ -36,10 +38,5 @@ jobs:
         with:
           title: Julia Dependency Update
           token: ${{ steps.generate-token.outputs.token }}
-      - name: Enable Pull Request Automerge
-        if: steps.cpr.outputs.pull-request-operation == 'created'
-        uses: peter-evans/enable-pull-request-automerge@v2
-        with:
-          token: ${{ steps.generate-token.outputs.token }}
-          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
-          merge-method: squash
+          labels: |
+            automerge
