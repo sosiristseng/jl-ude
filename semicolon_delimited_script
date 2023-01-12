@@ -1,0 +1,2 @@
+julia --color=yes --project=/work --threads=auto -e 'import Pkg; Pkg.update()'
+
