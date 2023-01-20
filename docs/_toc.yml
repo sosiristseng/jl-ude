@@ -10,3 +10,10 @@ parts:
       - file: pde-01-ode2pde
       - file: pde-02-heat
       - file: pde-03-brusselator
+  - caption: Universla Differential Equations
+    numbered: True
+    chapters:
+      - file: ude-01-firstexample
+      - file: ude-02-multishooting
+      - file: ude-03-neuralpde-ode
+      - file: ude-04-poission

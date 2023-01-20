@@ -38,6 +38,10 @@ jobs:
           - pde-01-ode2pde
           - pde-02-heat
           - pde-03-brusselator
+          - ude-01-firstexample
+          - ude-02-multishooting
+          - ude-03-neuralpde-ode
+          - ude-04-poission
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -57,10 +61,10 @@ jobs:
           ${{ env.IMAGE_NAME }}:test
           jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=${{ env.TIMEOUT }} --execute --inplace
           /work/docs/${{ matrix.notebook }}.ipynb
-      - name: Upload Notebook
+      - name: Upload Notebooks
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.notebook }}
+          name: notebook
           path: docs/${{ matrix.notebook }}.ipynb
 
   jupyter-book:
