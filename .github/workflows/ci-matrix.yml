@@ -44,7 +44,6 @@ jobs:
             type=ref,event=pr
       - name: Build and cache Docker
         uses: docker/build-push-action@v4
-        uses: docker/build-push-action@v4
         with:
           context: .
           file: ${{ env.DFILE }}
