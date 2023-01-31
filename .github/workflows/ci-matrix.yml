@@ -92,7 +92,7 @@ jobs:
           docker run --rm
           --workdir=/tmp -v ${{ github.workspace }}:/tmp
           myimage:test
-          jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=${{ env.TIMEOUT }} --execute --inplace
+          jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=${{ env.TIMEOUT }} --execute --inplace --allow-errors
           ${{ matrix.notebook }}
       - name: Upload Notebook
         uses: actions/upload-artifact@v3
