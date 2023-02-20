@@ -1,4 +1,5 @@
 [deps]
+ComponentArrays = "b0b7db55-cfe3-40fc-9ded-d10e2dbeff66"
 DiffEqFlux = "aae7a2af-3d4f-5e19-a356-7da93b79d9d0"
 DomainSets = "5b8099bc-c8ec-5219-889f-1d9e522a28bf"
 Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
