@@ -1,1 +1,1 @@
-FROM ghcr.io/ww-jl/pde:binder
+FROM ghcr.io/sosiristseng/jl-pde:binder
