@@ -77,13 +77,13 @@ jobs:
   jupyter-book:
     needs: execute
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/sosiristseng/docker-jupyterbook:latest
     # store success output flag for the ci job
     outputs:
       success: ${{ steps.setoutput.outputs.success }}
+    env:
+      PYTHON_VER: '3.11'
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v3
       - name: Download notebooks
         uses: actions/download-artifact@v3
@@ -95,6 +95,14 @@ jobs:
         working-directory: out
       - name: Move notebooks
         run: find out/ -type f -iname '*.ipynb' -exec mv -t docs/ {} +
+      - name: Setup Python ${{ env.PYTHON_VER }}
+        uses: actions/setup-python@v4
+        id: python
+        with:
+          python-version: ${{ env.PYTHON_VER }}
+          cache: 'pip'
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
       - name: Build website
         run: jupyter-book build docs/
       - name: Upload pages artifact
@@ -106,13 +114,13 @@ jobs:
         id: setoutput
         run: echo "success=true" >> $GITHUB_OUTPUT
 
-  # GitHub status check
+  # CI job for GitHub status check
   # https://brunoscheufler.com/blog/2022-04-09-the-required-github-status-check-that-wasnt
   ci:
     name: CI (matrix)
     needs: jupyter-book
+    if: always()
     runs-on: ubuntu-latest
-    if: always() # always run, so we never skip the check
     steps:
       # pass step only when output of previous jupyter-book job is set
       # in case at least one of the execution fails, jupyter-book is skipped
