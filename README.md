@@ -1,1 +1,1 @@
-# Partial Differential Equations (PDEs)
+# Universal Differential Equations (UDEs)
