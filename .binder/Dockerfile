@@ -1,1 +1,1 @@
-FROM ghcr.io/sosiristseng/jl-ude:binder
+FROM ghcr.io/ww-jl/ude:binder
