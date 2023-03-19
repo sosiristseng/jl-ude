@@ -1,1 +1,1 @@
-# Universal Differential Equations (UDEs) Examples
+# Universal Differential Equations (UDEs)
