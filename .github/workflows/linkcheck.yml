@@ -10,24 +10,32 @@ on:
     paths:
       - '.github/workflows/linkcheck.yml'
 
-env:
-  PY_VER: '3.11'
-
 jobs:
   linkcheck:
     runs-on: ubuntu-latest
+    container: ghcr.io/sosiristseng/docker-jupyterbook:0.15.1.1
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: '1'
+      - name: Convert literate notebooks to Markdown
+        shell: julia --color=yes {0}
+        working-directory: docs/
+        run: |
+          import Pkg
+          Pkg.add("Literate")
+          using Literate
+          for nb in readdir(pwd())
+              if endswith(nb, ".jl")
+                Literate.markdown(nb; mdstrings=true, flavor = Literate.CommonMarkFlavor())
+              end
+          end
       - name: Disable code cell execution
         uses: mikefarah/yq@master
         with:
           cmd: yq -i '.execute.execute_notebooks = "off"' 'docs/_config.yml'
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PY_VER }}
-      - name: Install Jupyter book
-        run: pip install jupyter-book
-      - name: Check Links
+      - name: Check links
         run: jupyter-book build docs/ --builder linkcheck
