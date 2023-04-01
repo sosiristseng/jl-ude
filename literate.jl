@@ -15,7 +15,7 @@ end
 
 pretty_table([nbs ts], header=["Notebook", "Elapsed (s)"])
 
-# Retry and locate errors
+# Debug notebooks one by one if there are errors
 for (nb, t) in zip(nbs, ts)
     if isnan(t)
         println("Debugging notebook: ", nb)
