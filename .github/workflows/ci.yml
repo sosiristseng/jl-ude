@@ -39,8 +39,8 @@ jobs:
           path: |
             /srv/juliapkgs
           key: ${{ runner.os }}-julia-${{ env.JULIA_CACHE }}-${{ hashFiles('**/Manifest.toml') }}
-          # restore-keys: |
-          #   ${{ runner.os }}-julia-${{ env.JULIA_CACHE }}-
+          restore-keys: |
+            ${{ runner.os }}-julia-${{ env.JULIA_CACHE }}-
       - name: Install Julia dependencies
         env:
           JULIA_PROJECT: ${{ github.workspace }}
