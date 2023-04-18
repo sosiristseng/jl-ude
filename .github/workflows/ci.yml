@@ -23,7 +23,7 @@ jobs:
       NPROC: '2'
       JULIA_CACHE: '1'
     container:
-      image: ghcr.io/sosiristseng/juliabook:1.9.0-rc2
+      image: ghcr.io/sosiristseng/juliabook:1.9.0rc2
       env:
         JULIA_NUM_THREADS: 'auto'
         # Let PythonCall use built-in python
