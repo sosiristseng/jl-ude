@@ -7,4 +7,4 @@ on:
 
 jobs:
   linkcheck:
-    uses: sosiristseng/jbook-workflows/.github/workflows/lychee.yml@main
+    uses: sosiristseng/juliabook/.github/workflows/lychee.yml@main
