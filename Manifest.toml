@@ -715,9 +715,9 @@ version = "0.8.4"
 
 [[deps.Flux]]
 deps = ["Adapt", "ChainRulesCore", "Functors", "LinearAlgebra", "MLUtils", "MacroTools", "NNlib", "OneHotArrays", "Optimisers", "Preferences", "ProgressLogging", "Random", "Reexport", "SparseArrays", "SpecialFunctions", "Statistics", "Zygote"]
-git-tree-sha1 = "f1dc18a777f25b8fd689755fa9d869891f41a15e"
+git-tree-sha1 = "723a8ec75b26fe278256c89c363e370ba733c12e"
 uuid = "587475ba-b771-5e3f-ad9e-33799f191a9c"
-version = "0.14.3"
+version = "0.14.4"
 
     [deps.Flux.extensions]
     FluxAMDGPUExt = "AMDGPU"
@@ -1288,10 +1288,10 @@ weakdeps = ["ChainRulesCore", "ForwardDiff", "SpecialFunctions"]
     SpecialFunctionsExt = "SpecialFunctions"
 
 [[deps.Lux]]
-deps = ["ADTypes", "ChainRulesCore", "ConcreteStructs", "Functors", "LinearAlgebra", "LuxCore", "LuxDeviceUtils", "LuxLib", "Markdown", "Optimisers", "PackageExtensionCompat", "Random", "Reexport", "Setfield", "SparseArrays", "Statistics", "TruncatedStacktraces", "WeightInitializers"]
-git-tree-sha1 = "882138ec1db47de6fecefd347665cafa25d5da8b"
+deps = ["ADTypes", "Adapt", "ChainRulesCore", "ConcreteStructs", "Functors", "LinearAlgebra", "LuxCore", "LuxDeviceUtils", "LuxLib", "Markdown", "Optimisers", "PackageExtensionCompat", "Random", "Reexport", "Setfield", "SparseArrays", "Statistics", "TruncatedStacktraces", "WeightInitializers"]
+git-tree-sha1 = "2d9956ba484e78c6285f8ffb30d02fc2e7addd36"
 uuid = "b2108857-7c20-44ae-9111-449ecde12c47"
-version = "0.5.2"
+version = "0.5.3"
 
     [deps.Lux.extensions]
     LuxComponentArraysExt = "ComponentArrays"
