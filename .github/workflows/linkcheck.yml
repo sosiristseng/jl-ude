@@ -32,26 +32,9 @@ jobs:
         id: cache-pip
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-pip-${{ steps.cp.outputs.python-version }}-${{ hashFiles('requirements-jb.txt') }}
+          key: ${{ runner.os }}-pip-${{ steps.cp.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
       - name: Install python packages
         if: ${{ steps.cache-pip.outputs.cache-hit != 'true' }}
-        run: pip install -r requirements-jb.txt
-      - name: Setup Julia
-        uses: julia-actions/setup-julia@v1
-      - name: Convert literate notebooks to markdown files
-        shell: julia --color=yes {0}
-        working-directory: ${{ env.DIR }}
-        run: |
-          import Pkg
-          Pkg.add("Literate")
-          using Literate
-          for (root, dirs, files) in walkdir(pwd())
-            for file in files
-              if endswith(file, ".jl")
-                nb = joinpath(root, file)
-                Literate.notebook(nb, dirname(nb); mdstrings=true, execute=false)
-              end
-            end
-          end
+        run: pip install -r requirements.txt
       - name: Check links
         run: jupyter-book build ${DIR} --builder linkcheck
