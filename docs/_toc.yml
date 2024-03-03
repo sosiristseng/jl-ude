@@ -4,7 +4,7 @@
 format: jb-book
 root: index
 chapters:
-  - file: ude-01-firstexample
-  - file: ude-02-multishooting
-  - file: ude-03-neuralode
-  - file: ude-04-poission
+  - file: 01-firstexample
+  - file: 02-multishooting
+  - file: 03-neuralode
+  - file: 04-poission

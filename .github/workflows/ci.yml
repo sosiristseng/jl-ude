@@ -12,21 +12,20 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  TIMEOUT: '-1'    # nbconvert timeout
   EXTRA_ARGS: ''   # Extra arguments for nbconvert
-  PY_VER: '3.12'   # Python version
   CACHE_NUM: '1'
   JULIA_CONDAPKG_BACKEND: 'Null'
-  JULIA_NUM_THREADS: 'auto'
   JULIA_CI: 'true'
+  JULIA_NUM_THREADS: 'auto'
 
 jobs:
   setup:
+    permissions:
+      packages: write
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      cache-key: ${{ steps.cache-julia.outputs.cache-primary-key }}
-      jl-ver: ${{ steps.read_toml.outputs.value }}
+      hash: ${{ steps.jl.outputs.hash }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -34,18 +33,19 @@ jobs:
       uses: actions/setup-python@v5
       id: cp
       with:
-        python-version: ${{ env.PY_VER }}
-    - name: Cache pip
-      uses: actions/cache@v3
-      id: cache-pip
+        python-version: '3.x'
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      id: cache-py
       with:
+        save-always: 'true'
         path: ${{ env.pythonLocation }}
-        key: ${{ runner.os }}-pip-${{ steps.cp.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
-    - name: Install python packages
-      if: ${{ steps.cache-pip.outputs.cache-hit != 'true' }}
+        key:  ${{ runner.os }}-pip-${{ steps.cp.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+    - name: Install pip dependencies if cache miss
+      if: ${{ steps.cache-py.outputs.cache-hit != 'true' }}
       run: pip install -r requirements.txt
     - name: Read Julia version
-      uses: SebRollen/toml-action@v1.0.2
+      uses: SebRollen/toml-action@v1.2.0
       id: read_toml
       with:
         file: 'Manifest.toml'
@@ -54,31 +54,32 @@ jobs:
       uses: julia-actions/setup-julia@v1
       with:
         version: ${{ steps.read_toml.outputs.value }}
-        show-versioninfo: 'true'
+    - name: Julia env hash
+      id: jl
+      run: echo "hash=${{ hashFiles('src/**', 'Project.toml', 'Manifest.toml' )}}" >> $GITHUB_OUTPUT
     - name: Cache Julia packages
-      uses: actions/cache/restore@v3
+      uses: actions/cache@v4
       id: cache-julia
       with:
+        save-always: 'true'
         path: |
           ~/.julia
           !~/.julia/registries
-        key: ${{ runner.os }}-julia-${{ steps.read_toml.outputs.value }}-${{ env.CACHE_NUM }}-${{ hashFiles('src/**','Project.toml', 'Manifest.toml')}}
+        key: ${{ runner.os }}-julia-${{ env.CACHE_NUM }}-${{ steps.jl.outputs.hash }}
         restore-keys: |
-          ${{ runner.os }}-julia-${{ steps.read_toml.outputs.value }}-${{ env.CACHE_NUM }}-
+          ${{ runner.os }}-julia-${{ env.CACHE_NUM }}-
     - name: Install Julia packages
       if: ${{ steps.cache-julia.outputs.cache-hit != 'true' }}
       env:
         PYTHON: ${{ env.pythonLocation }}/python
+      shell: julia --color=yes {0}
       run: |
-        julia --project=@. --color=yes -e 'using Pkg, Dates; Pkg.instantiate(); Pkg.precompile(); Pkg.gc(collect_delay=Day(0))'
-    - name: Save Julia packages
-      uses: actions/cache/save@v3
-      if: ${{ steps.cache-julia.outputs.cache-hit != 'true' }}
-      with:
-        path: |
-          ~/.julia
-          !~/.julia/registries
-        key: ${{ steps.cache-julia.outputs.cache-primary-key }}
+        using Pkg, Dates
+        Pkg.add(["IJulia"])
+        Pkg.activate(".")
+        Pkg.instantiate()
+        Pkg.precompile()
+        Pkg.gc(collect_delay=Day(0))
     - name: List notebooks as a JSON array
       id: set-matrix
       working-directory: docs
@@ -93,61 +94,71 @@ jobs:
         # Notebooks need to be executed
         notebook: ${{ fromJSON(needs.setup.outputs.matrix) }}
     runs-on: ubuntu-latest
+    env:
+      NB: docs/${{ matrix.notebook }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Restore notebook if present
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: nb-cache
         with:
-          path: docs/${{ matrix.notebook }}
-          key: ${{ runner.os }}-notebook-${{ hashFiles(format('docs/{0}', matrix.notebook)) }}-${{ needs.setup.outputs.cache-key }}
+          path: ${{ env.NB }}
+          key: ${{ runner.os }}-notebook-${{ hashFiles(env.NB) }}-${{ needs.setup.outputs.hash }}
       - name: Setup Python
         if: ${{ steps.nb-cache.outputs.cache-hit != 'true' }}
         uses: actions/setup-python@v5
         id: cp
         with:
-          python-version: ${{ env.PY_VER }}
-      - name: Cache pip
+          python-version: '3.x'
+      - name: Cache pip dependencies
         if: ${{ steps.nb-cache.outputs.cache-hit != 'true' }}
-        uses: actions/cache@v3
-        id: cache-pip
+        uses: actions/cache/restore@v4
+        id: cache-py
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-pip-${{ steps.cp.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+          key:  ${{ runner.os }}-pip-${{ steps.cp.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+      - name: Read Julia version
+        if: ${{ steps.nb-cache.outputs.cache-hit != 'true' }}
+        uses: SebRollen/toml-action@v1.2.0
+        id: read_toml
+        with:
+          file: 'Manifest.toml'
+          field: 'julia_version'
       - name: Setup Julia
         if: ${{ steps.nb-cache.outputs.cache-hit != 'true' }}
-        uses: julia-actions/setup-julia@v1
+        uses: julia-actions/setup-julia@v1.9.6
         with:
-          version: ${{ needs.setup.outputs.jl-ver }}
-      - name: Restore Julia packages
+          version: ${{ steps.read_toml.outputs.value }}
+      - name: Cache Julia packages
         if: ${{ steps.nb-cache.outputs.cache-hit != 'true' }}
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache-julia
         with:
           path: |
             ~/.julia
             !~/.julia/registries
-          key: ${{ needs.setup.outputs.cache-key }}
+          key: ${{ runner.os }}-julia-${{ env.CACHE_NUM }}-${{ needs.setup.outputs.hash }}
       - name: Install IJulia kernel
         if: ${{ steps.nb-cache.outputs.cache-hit != 'true' }}
-        run: julia --project=@. --color=yes -e 'using IJulia; installkernel("Julia", "--project=@.")'
+        run: julia --color=yes -e 'import IJulia; IJulia.installkernel("julia", "--project=@.")'
       - name: Execute Notebook
         if: ${{ steps.nb-cache.outputs.cache-hit != 'true' }}
         run: >
-          jupyter nbconvert --to notebook --execute --inplace ${{ env.EXTRA_ARGS }}
-          --ExecutePreprocessor.timeout=${{ env.TIMEOUT }}
-          --ExecutePreprocessor.kernel_name=julia-1.$(julia -e 'print(VERSION.minor)')
-          docs/${{ matrix.notebook }}
+          jupyter nbconvert --to notebook --execute --inplace
+          ${{ env.EXTRA_ARGS }}
+          --ExecutePreprocessor.timeout=-1
+          --ExecutePreprocessor.kernel_name=$(julia -e 'print("julia-1.",VERSION.minor)')
+          ${{ env.NB }}
       - name: Cache notebook
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         if: ${{ steps.nb-cache.outputs.cache-hit != 'true' }}
         with:
-          path: docs/${{ matrix.notebook }}
+          path: ${{ env.NB }}
           key: ${{ steps.nb-cache.outputs.cache-primary-key }}
       - name: Convert artifact Name
         id: art
-        run: echo "name=$(echo ${{ matrix.notebook }} | sed 's/\//-/g')" >> "$GITHUB_OUTPUT"
+        run: echo "name=$(echo ${{ env.NB }} | sed 's/\//-/g')" >> "$GITHUB_OUTPUT"
       - name: Upload Notebook
         uses: actions/upload-artifact@v4
         with:
@@ -171,13 +182,13 @@ jobs:
         uses: actions/setup-python@v5
         id: cp
         with:
-          python-version: ${{ env.PY_VER }}
-      - name: Cache pip
-        uses: actions/cache@v3
-        id: cache-pip
+          python-version: '3.x'
+      - name: Cache pip dependencies
+        uses: actions/cache/restore@v4
+        id: cache-py
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-pip-${{ steps.cp.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
+          key:  ${{ runner.os }}-pip-${{ steps.cp.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
       - name: Build website
         run: jupyter-book build docs/
       - name: Upload pages artifact
