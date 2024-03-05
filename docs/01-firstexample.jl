@@ -147,12 +147,10 @@ end
 # Callback function to observe training process
 anim = Animation()
 callback = function (p, l, pred; doplot = true)
-    # display(l)
     if doplot
         plt = scatter(tsteps, ode_data[1,:], label = "data")
         scatter!(plt, tsteps, pred[1,:], label = "prediction")
         frame(anim)
-        # display(plot(plt))
     end
     return false
 end

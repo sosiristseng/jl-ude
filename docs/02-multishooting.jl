@@ -62,14 +62,14 @@ end
 # Animate training process by the callback function
 anim = Animation()
 callback = function (p, l, preds; doplot = true)
-    # display(l)
+    ## display(l)
     if doplot
-        # plot the original data
+        ## plot the original data
         plt = scatter(tsteps, ode_data[1,:], label = "Data")
-        # plot the different predictions for individual shoot
+        ## plot the different predictions for individual shoot
         plot_multiple_shoot(plt, preds, group_size)
         frame(anim)
-        # display(plot(plt))
+        ## display(plot(plt))
     end
     return false
 end
