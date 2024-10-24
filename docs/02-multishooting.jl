@@ -20,12 +20,12 @@ rng = Random.Xoshiro(0)
 
 # Define initial conditions and time steps
 datasize = 51
-u0 = Float32[2.0, 0.0]
-tspan = (0.0f0, 5.0f0)
+u0 = [2.0, 0.0]
+tspan = (0.0, 5.0)
 tsteps = range(tspan[begin], tspan[end], length = datasize)
 
 # True values
-true_A = Float32[-0.1 2.0; -2.0 -0.1]
+true_A = [-0.1 2.0; -2.0 -0.1]
 
 # Generate data from the true function: $x^3 * A$
 function trueODEfunc!(du, u, p, t)
@@ -41,7 +41,7 @@ nn = Lux.Chain(
     Lux.Dense(2, 16, tanh),
     Lux.Dense(16, 2)
 )
-p_init, st = Lux.setup(rng, nn)
+p_init, st = Lux.setup(rng, nn) |> f64
 ps = ComponentArray(p_init)
 pd, pax = getdata(ps), getaxes(ps)
 
@@ -61,7 +61,6 @@ anim = Animation()
 lossrecord=Float64[]
 callback = function (state, l; doplot = true)
     if doplot
-        # preds = predict_neuralode(state.u)
         plt = scatter(tsteps, ode_data[1,:], label = "Data")
         plot_multiple_shoot(plt, preds, group_size)
         frame(anim)

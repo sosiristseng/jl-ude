@@ -17,18 +17,18 @@ rng = Random.Xoshiro(0)
 model(u, p, t) = cospi(2t)
 
 # Prepare data
-tspan = (0.0f0, 1.0f0)
-u0 = 0.0f0
+tspan = (0.0, 1.0)
+u0 = 0.0
 prob = ODEProblem(model, u0, tspan)
 
 # Construct a neural network to solve the problem.
 chain = Lux.Chain(Lux.Dense(1, 5, σ), Lux.Dense(5, 1))
-ps, st = Lux.setup(rng, chain)
+ps, st = Lux.setup(rng, chain) |> f64
 
 # Solve the ODE as in `DifferentialEquations.jl`, just change the solver algorithm to `NeuralPDE.NNODE()`.
 optimizer = OptimizationOptimisers.Adam(0.1)
 alg = NeuralPDE.NNODE(chain, optimizer, init_params = ps)
-sol = solve(prob, alg, maxiters=2000, saveat = 0.01f0)
+sol = solve(prob, alg, maxiters=2000, saveat = 0.01)
 
 # Comparing to the regular solver
 sol2 = solve(prob, Tsit5(), saveat=sol.t)

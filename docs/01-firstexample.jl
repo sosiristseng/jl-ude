@@ -5,7 +5,6 @@ A neural ODE is an ODE where a neural network defines its derivative function. $
 
 From: https://docs.sciml.ai/DiffEqFlux/stable/examples/neural_ode/
 ===#
-
 using Lux, DiffEqFlux, OrdinaryDiffEq, ComponentArrays
 using Optimization, OptimizationOptimJL, OptimizationOptimisers
 using Random, Plots
@@ -18,9 +17,9 @@ function trueODEfunc(du, u, p, t)
 end
 
 # Generate data from the true function
-u0 = Float32[2.0; 0.0]
+u0 = [2.0; 0.0]
 datasize = 31
-tspan = (0.0f0, 1.5f0)
+tspan = (0.0, 1.5)
 tsteps = range(tspan[begin], tspan[end], length = datasize)
 prob_trueode = ODEProblem(trueODEfunc, u0, tspan)
 ode_data = Array(solve(prob_trueode, Tsit5(), saveat = tsteps))
@@ -32,7 +31,7 @@ dudt2 = Lux.Chain(
     Lux.Dense(50, 2)
 )
 
-p, st = Lux.setup(rng, dudt2)
+p, st = Lux.setup(rng, dudt2) |> f64
 prob_neuralode = NeuralODE(dudt2, tspan, Tsit5(), saveat = tsteps)
 
 # Predicted output
