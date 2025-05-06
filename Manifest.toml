@@ -251,17 +251,19 @@ version = "1.6.3"
     BandedMatrices = "aae01518-5342-5314-be14-df237901396f"
 
 [[deps.Boltz]]
-deps = ["ADTypes", "ArgCheck", "Artifacts", "ChainRulesCore", "Compat", "ConcreteStructs", "Downloads", "ForwardDiff", "Functors", "GPUArraysCore", "LazyArtifacts", "Lux", "LuxCore", "MLDataDevices", "Markdown", "NNlib", "Random", "Reexport", "Scratch", "Setfield", "Static", "Statistics", "WeightInitializers"]
-git-tree-sha1 = "26766d82a52495bde310fa757f3e7b3e78324bf8"
+deps = ["ADTypes", "ArgCheck", "Artifacts", "ChainRulesCore", "Compat", "ConcreteStructs", "Downloads", "ForwardDiff", "Functors", "LazyArtifacts", "Lux", "LuxCore", "MLDataDevices", "Markdown", "NNlib", "Random", "Reexport", "Scratch", "Setfield", "Static", "Statistics", "WeightInitializers"]
+git-tree-sha1 = "6d441c7d7f96f8a30960e32916bfdf526c2addd5"
 uuid = "4544d5e4-abc5-4dea-817f-29e4c205d9c8"
-version = "1.4.1"
+version = "1.5.0"
 
     [deps.Boltz.extensions]
     BoltzDataInterpolationsExt = "DataInterpolations"
     BoltzDynamicExpressionsExt = "DynamicExpressions"
+    BoltzEnzymeExt = "Enzyme"
     BoltzJLD2Ext = "JLD2"
     BoltzMetalheadExt = "Metalhead"
     BoltzPickleExt = "Pickle"
+    BoltzReactantExt = ["Reactant", "ReactantCore"]
     BoltzReverseDiffExt = "ReverseDiff"
     BoltzSafeTensorsExt = "SafeTensors"
     BoltzTrackerExt = "Tracker"
@@ -270,9 +272,12 @@ version = "1.4.1"
     [deps.Boltz.weakdeps]
     DataInterpolations = "82cc6244-b520-54b8-b5a6-8a565e85f1d0"
     DynamicExpressions = "a40a106e-89c9-4ca8-8020-a735e8728b6b"
+    Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
     JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
     Metalhead = "dbeba491-748d-5e0e-a39e-b530a07fa0cc"
     Pickle = "fbb45041-c46e-462f-888f-7c521cafbc2c"
+    Reactant = "3c362404-f566-11ee-1572-e11a4b42c853"
+    ReactantCore = "a3311ec8-5e00-46d5-b541-4f83e724a433"
     ReverseDiff = "37e2e3b7-166d-5795-8a7a-e32c996b4267"
     SafeTensors = "eeda0dda-7046-4914-a807-2495fc7abb89"
     Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
@@ -556,9 +561,9 @@ version = "1.9.1"
 
 [[deps.DiffEqBase]]
 deps = ["ArrayInterface", "ConcreteStructs", "DataStructures", "DocStringExtensions", "EnumX", "EnzymeCore", "FastBroadcast", "FastClosures", "FastPower", "FunctionWrappers", "FunctionWrappersWrappers", "LinearAlgebra", "Logging", "Markdown", "MuladdMacro", "Parameters", "PrecompileTools", "Printf", "RecursiveArrayTools", "Reexport", "SciMLBase", "SciMLOperators", "SciMLStructures", "Setfield", "Static", "StaticArraysCore", "Statistics", "SymbolicIndexingInterface", "TruncatedStacktraces"]
-git-tree-sha1 = "2d4efdfcd0070e4ba9041f8edb0f3660a650deca"
+git-tree-sha1 = "6a0f6f17adbeb77688220cfb3e665c8f6e2a60ea"
 uuid = "2b5f629d-d688-5b77-993f-72d75c75574e"
-version = "6.171.0"
+version = "6.172.0"
 
     [deps.DiffEqBase.extensions]
     DiffEqBaseCUDAExt = "CUDA"
@@ -1842,9 +1847,9 @@ version = "1.11.0"
 
 [[deps.ModelingToolkit]]
 deps = ["ADTypes", "AbstractTrees", "ArrayInterface", "BlockArrays", "Combinatorics", "CommonSolve", "Compat", "ConstructionBase", "DataStructures", "DiffEqBase", "DiffEqCallbacks", "DiffEqNoiseProcess", "DiffRules", "DifferentiationInterface", "Distributed", "Distributions", "DocStringExtensions", "DomainSets", "DynamicQuantities", "EnumX", "ExprTools", "FindFirstFunctions", "ForwardDiff", "FunctionWrappers", "FunctionWrappersWrappers", "Graphs", "InteractiveUtils", "JuliaFormatter", "JumpProcesses", "Latexify", "Libdl", "LinearAlgebra", "MLStyle", "Moshi", "NaNMath", "NonlinearSolve", "OffsetArrays", "OrderedCollections", "PrecompileTools", "RecursiveArrayTools", "Reexport", "RuntimeGeneratedFunctions", "SCCNonlinearSolve", "SciMLBase", "SciMLStructures", "Serialization", "Setfield", "SimpleNonlinearSolve", "SparseArrays", "SpecialFunctions", "StaticArrays", "SymbolicIndexingInterface", "SymbolicUtils", "Symbolics", "URIs", "UnPack", "Unitful"]
-git-tree-sha1 = "873106e74ad722718eecaa152e540cd66b88bec6"
+git-tree-sha1 = "73c71b992c5900486349b741a0cbb64b07ca320d"
 uuid = "961ee093-0014-501f-94e3-6117800e7a78"
-version = "9.76.0"
+version = "9.77.0"
 
     [deps.ModelingToolkit.extensions]
     MTKBifurcationKitExt = "BifurcationKit"
@@ -2849,9 +2854,9 @@ version = "1.2.0"
 
 [[deps.SimpleNonlinearSolve]]
 deps = ["ADTypes", "ArrayInterface", "BracketingNonlinearSolve", "CommonSolve", "ConcreteStructs", "DifferentiationInterface", "FastClosures", "FiniteDiff", "ForwardDiff", "LineSearch", "LinearAlgebra", "MaybeInplace", "NonlinearSolveBase", "PrecompileTools", "Reexport", "SciMLBase", "Setfield", "StaticArraysCore"]
-git-tree-sha1 = "5e45414767cf97234f90a874b9a43cda876adb32"
+git-tree-sha1 = "068c16a16834c1483c299b0e27e901599439570d"
 uuid = "727e6d20-b764-4bd8-a329-72de5adea6c7"
-version = "2.3.0"
+version = "2.4.0"
 weakdeps = ["ChainRulesCore", "DiffEqBase", "ReverseDiff", "Tracker"]
 
     [deps.SimpleNonlinearSolve.extensions]
@@ -3098,9 +3103,9 @@ version = "3.27.0"
 
 [[deps.Symbolics]]
 deps = ["ADTypes", "ArrayInterface", "Bijections", "CommonWorldInvalidations", "ConstructionBase", "DataStructures", "DiffRules", "Distributions", "DocStringExtensions", "DomainSets", "DynamicPolynomials", "LaTeXStrings", "Latexify", "Libdl", "LinearAlgebra", "LogExpFunctions", "MacroTools", "Markdown", "NaNMath", "OffsetArrays", "PrecompileTools", "Primes", "RecipesBase", "Reexport", "RuntimeGeneratedFunctions", "SciMLBase", "Setfield", "SparseArrays", "SpecialFunctions", "StaticArraysCore", "SymbolicIndexingInterface", "SymbolicLimits", "SymbolicUtils", "TermInterface"]
-git-tree-sha1 = "e46dbf646bc3944c22a37745361c2e0a94f81d66"
+git-tree-sha1 = "8a39dd8c60cd38124c49a30ac9c9007634f7b616"
 uuid = "0c5d862f-8b57-4792-8d23-62f2024744c7"
-version = "6.38.0"
+version = "6.39.0"
 
     [deps.Symbolics.extensions]
     SymbolicsForwardDiffExt = "ForwardDiff"
