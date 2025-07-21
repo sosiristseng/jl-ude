@@ -27,7 +27,7 @@ using Lux
 using Optimization
 using OptimizationOptimJL
 using ModelingToolkit
-using ModelingToolkit: Interval
+using DomainSets: Interval
 using LineSearches
 using Plots
 
