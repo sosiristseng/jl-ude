@@ -27,17 +27,15 @@ using Lux
 using Optimization
 using OptimizationOptimJL
 using ModelingToolkit
-using DomainSets: Interval
+using DomainSets
 using LineSearches
 using Plots
 
-#---
+# 2D PDE
 @parameters x y
 @variables u(..)
 Dxx = Differential(x)^2
 Dyy = Differential(y)^2
-
-# 2D PDE
 eq  = Dxx(u(x, y)) + Dyy(u(x, y)) ~ -sinpi(x) * sinpi(y)
 
 # Boundary conditions
@@ -50,8 +48,8 @@ bcs = [
 
 # Space domains
 domains = [
-    x ∈ Interval(0.0, 1.0),
-    y ∈ Interval(0.0, 1.0)
+    x ∈ DomainSets.Interval(0.0, 1.0),
+    y ∈ DomainSets.Interval(0.0, 1.0)
 ]
 
 # Build a neural network for the PDE solver.
@@ -78,13 +76,13 @@ end
 
 # Solve the problem. It may take a long time.
 opt = OptimizationOptimJL.LBFGS(linesearch = LineSearches.BackTracking())
-res = Optimization.solve(prob, opt, callback = callback, maxiters=1000)
+@time res = Optimization.solve(prob, opt, callback = callback, maxiters=1000)
 
 #---
 plot(lossrecord, xlabel="Iters", yscale=:log10, ylabel="Loss", lab=false)
 
 # Plot the predicted solution of the PDE and compare it with the analytical solution to see the relative error.
-xs, ys = [infimum(d.domain):dx/10:supremum(d.domain) for d in domains]
+xs, ys = [DomainSets.infimum(d.domain):dx/10:DomainSets.supremum(d.domain) for d in domains]
 analytic_sol_func(x,y) = (sinpi(x)*sinpi(y))/(2pi^2)
 
 phi = discretization.phi
