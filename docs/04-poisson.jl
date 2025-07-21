@@ -1,7 +1,7 @@
 #===
-# Solving PDEs with ModelingToolkit and NeuralPDE
+# Solving Poisson PDEs
 
-Solving Poisson PDE Systems (https://docs.sciml.ai/NeuralPDE/stable/tutorials/pdesystem/)
+Solving Poisson PDE Systems (https://docs.sciml.ai/NeuralPDE/stable/tutorials/pdesystem/) using physics-informed neural network (PINN).
 
 $$
 \partial^{2}_{x}u(x,y) + \partial^{2}_{y}u(x,y) = -\sin (\pi x) \sin (\pi y)
@@ -27,17 +27,15 @@ using Lux
 using Optimization
 using OptimizationOptimJL
 using ModelingToolkit
-using ModelingToolkit: Interval
+using DomainSets: Interval
 using LineSearches
 using Plots
 
-#---
+# 2D Poisson PDE
 @parameters x y
 @variables u(..)
 Dxx = Differential(x)^2
 Dyy = Differential(y)^2
-
-# 2D PDE
 eq  = Dxx(u(x, y)) + Dyy(u(x, y)) ~ -sinpi(x) * sinpi(y)
 
 # Boundary conditions
@@ -56,12 +54,12 @@ domains = [
 
 # Build a neural network for the PDE solver.
 # Input: 2 dimensions.
-# Hidden layers: 16 neurons * 2 layers.
+# Hidden layers: 16 neurons * 2 layers, densly connected.
 # Output: single output `u(x, y)`
 dim = 2
 chain = Lux.Chain(Dense(dim, 16, Lux.σ), Dense(16, 16, Lux.σ), Dense(16, 1))
 
-# Discretization method uses`PhysicsInformedNN()` (PINN).
+# Discretization method uses `PhysicsInformedNN()` (PINN).
 dx = 0.05
 discretization = PhysicsInformedNN(chain, QuadratureTraining(; batch = 200, abstol = 1e-6, reltol = 1e-6))
 
@@ -78,7 +76,7 @@ end
 
 # Solve the problem. It may take a long time.
 opt = OptimizationOptimJL.LBFGS(linesearch = LineSearches.BackTracking())
-res = Optimization.solve(prob, opt, callback = callback, maxiters=1000)
+@time res = Optimization.solve(prob, opt, callback = callback, maxiters=1000)
 
 #---
 plot(lossrecord, xlabel="Iters", yscale=:log10, ylabel="Loss", lab=false)
