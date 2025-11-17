@@ -1,9 +1,9 @@
-name: Auto update Julia dependencies
+name: Auto update Julia manifest dependencies
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * 1' # Every week
+    - cron: '0 0 * * 0' # Every week
   push:
     branches:
       - main
@@ -25,14 +25,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+      - name: Setup Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: '1'
       - name: Update Julia dependencies
-        run: >
-          docker run --rm -w /tmp
-          -v ${{ github.workspace }}:/tmp
-          -e JULIA_PKG_PRECOMPILE_AUTO=0
-          julia:latest
-          julia --project=@. --color=yes -e 'import Pkg; Pkg.update()'
+        env:
+          JULIA_PKG_PRECOMPILE_AUTO: '0'
+        run: julia --project=@. --color=yes -e 'using Pkg; Pkg.status(; outdated=true); Pkg.update()'
       # Authenticate with a custom GitHub APP
       # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#authenticating-with-github-app-generated-tokens
       - name: Generate token for PR
@@ -47,5 +48,4 @@ jobs:
         with:
           title: Julia Dependency Update
           token: ${{ steps.generate-token.outputs.token }}
-          labels: |
-            automerge
+          labels: automerge
