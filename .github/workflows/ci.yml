@@ -26,9 +26,9 @@ jobs:
       hash: ${{ steps.img.outputs.hash }}
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       id: setup-python
       with:
         python-version: '3.x'
@@ -65,7 +65,7 @@ jobs:
       IMG: ghcr.io/${{ github.repository }}:${{ needs.setup.outputs.hash }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Cache notebook
         uses: actions/cache@v4
         id: nb-cache
@@ -94,7 +94,7 @@ jobs:
         id: art
         run: echo "name=$(echo ${{ env.NB }} | sed 's/\//-/g')" >> "$GITHUB_OUTPUT"
       - name: Upload Notebook
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: notebook-${{ steps.art.outputs.name }}-${{ needs.setup.outputs.hash }}-${{ hashFiles(env.NB) }}
           path: ${{ env.NBCACHE }}
@@ -106,9 +106,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Download notebooks
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           path: ${{ env.NBCACHE }}/
           pattern: notebook-*
@@ -116,12 +116,12 @@ jobs:
       - name: Copy back built notebooks
         run: cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.x'
           check-latest: true
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
       - name: Install Python dependencies
@@ -130,7 +130,7 @@ jobs:
         run: jupyter-book build docs/
       - name: Upload pages artifact
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: docs/_build/html/
 
@@ -160,7 +160,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
     - name: Setup Julia
       uses: julia-actions/setup-julia@v2
     - name: Convert literate files to Jupyter notebooks
