@@ -74,9 +74,9 @@ callback = function (p, l)
     return false
 end
 
-# Solve the problem. It may take a long time.
+# Solve the problem. You can increase maxiters to get a better solution, but it will take more time.
 opt = OptimizationOptimJL.LBFGS(linesearch = LineSearches.BackTracking())
-@time res = Optimization.solve(prob, opt, callback = callback, maxiters=1000)
+@time res = Optimization.solve(prob, opt, callback = callback, maxiters=100)
 
 #---
 plot(lossrecord, xlabel="Iters", yscale=:log10, ylabel="Loss", lab=false)
