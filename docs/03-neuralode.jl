@@ -101,14 +101,14 @@ using Random
 
 #---
 function lotka_volterra(u, p, t)
-    # Model parameters.
+    ## Model parameters.
     α, β, γ, δ = p
-    # Current state.
+    ## Current state.
     x, y = u
 
-    # Evaluate differential equations.
-    dx = (α - β * y) * x # prey
-    dy = (δ * x - γ) * y # predator
+    ## Evaluate differential equations.
+    dx = (α - β * y) * x ## prey
+    dy = (δ * x - γ) * y ## predator
 
     return [dx, dy]
 end
