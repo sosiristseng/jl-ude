@@ -1,7 +1,7 @@
 #===
 # Solving ODEs with NeuralPDE.jl
 
-From https://docs.sciml.ai/NeuralPDE/stable/tutorials/ode/
+Solving ODEs with Physics-Informed Neural Networks: https://docs.sciml.ai/NeuralPDE/stable/tutorials/ode/
 ===#
 using NeuralPDE
 using Lux
@@ -11,7 +11,7 @@ using LinearAlgebra
 using Random
 using Plots
 rng = Random.default_rng()
-Random.seed!(rng, 0)
+Random.seed!(rng, 42)
 
 # ## Solve ODEs
 # The true function: $u^{\prime} = cos(2 \pi t)$
@@ -48,7 +48,7 @@ using Plots
 rng = Random.default_rng()
 Random.seed!(rng, 0)
 
-# NNODE only supports out-of-place functions
+# NNODE only supports out-of-place functions `f(u, p ,t)`
 function lv(u, p, t)
     u₁, u₂ = u
     α, β, γ, δ = p
@@ -80,7 +80,7 @@ opt = LBFGS(linesearch = BackTracking())
 alg = NNODE(chain, opt, ps; strategy = WeightedIntervalTraining([0.7, 0.2, 0.1], 500), param_estim = true, additional_loss)
 
 # Solve the problem
-# Use `verbose=true` to see the fitting process
+# `verbose=true` for the fitting process
 @time sol = solve(prob, alg, verbose = true, abstol = 1e-8, maxiters = 5000, saveat = t_)
 
 # See the fitted parameters
@@ -93,13 +93,16 @@ plot!(sol_data, labels = ["u1_data" "u2_data"])
 # ## Bayesian inference for PINNs
 # https://docs.sciml.ai/NeuralPDE/stable/tutorials/Lotka_Volterra_BPINNs/
 using NeuralPDE
+using AdvancedHMC
+using MCMCChains
+using LogDensityProblems
 using Lux
 using Plots
 using OrdinaryDiffEq
 using Distributions
 using Random
 
-#---
+# NNODE only supports out-of-place functions `f(u, p ,t)`
 function lotka_volterra(u, p, t)
     ## Model parameters.
     α, β, γ, δ = p
@@ -133,7 +136,7 @@ plot(time, x, label = "noisy x")
 plot!(time, y, label = "noisy y")
 plot!(solution, labels = ["x" "y"])
 
-# Define a PINN
+# Define a PINN neural network. The input is time, and the output is the state of the system (x and y).
 chain = Chain(Dense(1, 6, tanh), Dense(6, 6, tanh), Dense(6, 2))
 
 # Use `BNNODE` for Bayesian inference. The parameters of the model are estimated with the dataset, and the uncertainty of the estimation is quantified with the posterior distribution.
@@ -152,8 +155,6 @@ alg = BNNODE(chain;
 
 # Solve the problem
 @time sol_pestim = solve(prob, alg; saveat = dt)
-
-#---
 sol_pestim.estimated_de_params
 
 #---
