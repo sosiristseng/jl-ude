@@ -33,9 +33,9 @@ jobs:
       ver: ${{ steps.julia-version.outputs.resolved }}
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Setup uv
-      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
       with:
         python-version: ${{ env.PY_VER }}
         activate-environment: true
@@ -58,7 +58,7 @@ jobs:
       with:
         version: ${{ steps.julia-version.outputs.resolved }}
     - name: Cache Julia packages
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       id: cache-julia
       with:
         path: ~/.julia
@@ -84,16 +84,16 @@ jobs:
       NB: docs/${{ matrix.notebook }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Cache notebook
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: nb-cache
         with:
           path: ${{ env.NBCACHE }}
           key: notebook-${{ needs.setup.outputs.env }}-${{ hashFiles(env.NB) }}
       - name: Setup uv
         if: ${{ steps.nb-cache.outputs.cache-hit != 'true' }}
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         with:
           python-version: ${{ env.PY_VER }}
           activate-environment: true
@@ -103,7 +103,7 @@ jobs:
         with:
           version: ${{ needs.setup.outputs.ver }}
       - name: Restore Julia packages
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         if: ${{ steps.nb-cache.outputs.cache-hit != 'true' }}
         id: cache-julia
         with:
@@ -131,7 +131,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Download notebooks
         uses: actions/download-artifact@v8
         with:
@@ -141,7 +141,7 @@ jobs:
       - name: Copy back built notebooks
         run: cp --verbose -rf ${{ env.NBCACHE }}/docs/* docs/
       - name: Setup NodeJS
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 'lts/*'
       - name: Build website
