@@ -16,10 +16,7 @@ project:
   # https://mystmd.org/guide/table-of-contents
   toc:
     - file: index.ipynb
-    - file: 01-firstexample.ipynb
-    - file: 02-multishooting.ipynb
-    - file: 03-neuralode.ipynb
-    - file: 04-poisson.ipynb
+    - pattern: "ude-*.ipynb"
 
 site:
   template: book-theme
