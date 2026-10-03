@@ -1,4 +1,5 @@
 # # Parameter estimation
+# https://docs.sciml.ai/NeuralPDE/stable/tutorials/ode_parameter_estimation/
 using NeuralPDE
 using OrdinaryDiffEq
 using Lux
@@ -22,13 +23,15 @@ end
 tspan = (0.0, 5.0)
 u0 = [5.0, 5.0]
 true_p = [1.5, 1.0, 3.0, 1.0]
-prob = ODEProblem(lv, u0, tspan, true_p)
-sol_data = solve(prob, Tsit5(), saveat = 0.01)
+prob = ODEProblem(lv, u0, tspan, [1.0, 1.0, 1.0, 1.0])
+prob_data = remake(prob, p = true_p)
+sol_data = solve(prob_data, Tsit5(), saveat = 0.01)
 
 t_ = sol_data.t
 u_ = Array(sol_data)
 
 # Define a neural network
+# One input, two ouputs, and three hidden layers with 15 neurons each
 n = 15
 chain = Chain(Dense(1, n, σ), Dense(n, n, σ), Dense(n, n, σ), Dense(n, 2))
 ps, st = Lux.setup(rng, chain) |> Lux.f64
@@ -37,12 +40,12 @@ ps, st = Lux.setup(rng, chain) |> Lux.f64
 additional_loss(phi, θ) = sum(abs2, phi(t_, θ) .- u_) / size(u_, 2)
 
 # NNODE solver
-opt = Optim.LBFGS(linesearch = BackTracking())
+opt = LBFGS(linesearch = BackTracking())
 alg = NNODE(chain, opt, ps; strategy = WeightedIntervalTraining([0.7, 0.2, 0.1], 500), param_estim = true, additional_loss)
 
-# Solve the problem
-# `verbose=true` for the fitting process
-@time sol = solve(prob, alg, verbose = true, abstol = 1e-8, maxiters = 5000, saveat = t_)
+# Solve the problem like a regular DE probelm
+# Turn `verbose=true` to see the fitting process
+@time sol = solve(prob, alg, verbose = false, abstol = 1e-8, maxiters = 5000, saveat = t_)
 
 # See the fitted parameters
 println(sol.k.u.p)

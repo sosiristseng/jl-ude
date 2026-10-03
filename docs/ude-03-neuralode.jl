@@ -11,7 +11,7 @@ using LinearAlgebra
 using Random
 using Plots
 rng = Random.default_rng()
-Random.seed!(rng, 42)
+Random.seed!(rng, 0)
 
 # ## Solve ODEs
 # The true function: $u^{\prime} = cos(2 \pi t)$
@@ -29,7 +29,8 @@ ps, st = Lux.setup(rng, chain) |> Lux.f64
 # Solve the ODE with `NeuralPDE.NNODE()`.
 optimizer = OptimizationOptimisers.Adam(0.1)
 alg = NeuralPDE.NNODE(chain, optimizer, init_params = ps)
-@time sol = solve(prob, alg, maxiters = 2000, saveat = 0.01, verbose = true)
+# Turn `verbose=true` to see the fitting process
+@time sol = solve(prob, alg, maxiters = 2000, saveat = 0.01, verbose = false)
 
 # Comparing to the regular solver
 sol2 = solve(prob, Tsit5(), saveat=sol.t)
