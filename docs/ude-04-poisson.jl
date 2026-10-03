@@ -22,13 +22,14 @@ where
 
 $x ∈ [0, 1], y ∈ [0, 1]$
 ===#
-using NeuralPDE
+using DomainSets
+using Integrals: GaussLegendre
+using LineSearches
 using Lux
+using ModelingToolkit
+using NeuralPDE
 using Optimization
 using OptimizationOptimJL
-using ModelingToolkit
-using DomainSets
-using LineSearches
 using Plots
 
 # 2D PDE
@@ -48,8 +49,8 @@ bcs = [
 
 # Space domains
 domains = [
-    x ∈ DomainSets.Interval(0.0, 1.0),
-    y ∈ DomainSets.Interval(0.0, 1.0)
+    x ∈ Interval(0.0, 1.0),
+    y ∈ Interval(0.0, 1.0)
 ]
 
 # Build a neural network for the PDE solver.
@@ -61,7 +62,7 @@ chain = Lux.Chain(Dense(dim, 16, Lux.σ), Dense(16, 16, Lux.σ), Dense(16, 1))
 
 # Discretization method uses`PhysicsInformedNN()` (PINN).
 dx = 0.05
-discretization = PhysicsInformedNN(chain, QuadratureTraining(; batch = 200, abstol = 1e-6, reltol = 1e-6))
+discretization = PhysicsInformedNN(chain, QuadratureTraining(; quadrature_alg = GaussLegendre(; n = 20), batch = 200, abstol = 1e-6, reltol = 1e-6))
 
 # Build the PDE system and discretize it.
 @named pde_system = PDESystem(eq, bcs, domains, [x, y], [u(x, y)])
@@ -76,7 +77,7 @@ end
 
 # Solve the problem. You can increase maxiters to get a better solution, but it will take more time.
 opt = OptimizationOptimJL.LBFGS(linesearch = LineSearches.BackTracking())
-@time res = Optimization.solve(prob, opt, callback = callback, maxiters=100)
+@time res = Optimization.solve(prob, opt, callback = callback, maxiters=500)
 
 #---
 plot(lossrecord, xlabel="Iters", yscale=:log10, ylabel="Loss", lab=false)
@@ -86,6 +87,10 @@ xs, ys = [DomainSets.infimum(d.domain):dx/10:DomainSets.supremum(d.domain) for d
 analytic_sol_func(x,y) = (sinpi(x)*sinpi(y))/(2pi^2)
 
 phi = discretization.phi
+discretization.strategy
+
+
+
 u_predict = reshape([first(phi([x, y], res.u)) for x in xs for y in ys], (length(xs), length(ys)))
 u_real = reshape([analytic_sol_func(x, y) for x in xs for y in ys], (length(xs), length(ys)))
 diff_u = abs.(u_predict .- u_real)
