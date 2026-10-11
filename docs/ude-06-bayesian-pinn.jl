@@ -13,6 +13,36 @@ using Random
 rng = Random.default_rng()
 Random.seed!(rng, 42)
 
+# ## Workaround for a NeuralPDE (v7.3.1) bug
+# `solve` always passes a `callback` keyword (an empty `CallbackSet` merged from
+# `prob.kwargs`) down to `__solve`, but `BNNODE`'s `__solve` method does not accept
+# it, which raises
+# `MethodError: no method matching __solve(::ODEProblem, ::BNNODE; callback::CallbackSet, ...)`.
+# Upstream accepts the keyword in NeuralPDE PR #1224, which is not in a release yet.
+# Adding a `callback` keyword to a `BNNODE` `__solve` method ourselves does not work:
+# such a method is considered more specific than the installed one and captures every
+# call (including our own delegating call), recursing forever. Instead, wrap the
+# algorithm in a thin type whose `__solve` accepts (and ignores, like upstream) an
+# empty `CallbackSet` and forwards everything else to the original `BNNODE` solver.
+# Delete this block and call `solve(prob, alg; ...)` directly once a NeuralPDE
+# release includes the fix.
+const SB = NeuralPDE.SciMLBase
+
+struct BNNODECallbackWorkaround <: SB.AbstractODEAlgorithm
+    alg
+end
+
+function SB.__solve(prob::SB.AbstractODEProblem, alg::BNNODECallbackWorkaround,
+        args...; callback = nothing, kwargs...)
+    if callback !== nothing &&
+            !(callback isa SB.CallbackSet &&
+              isempty(callback.continuous_callbacks) &&
+              isempty(callback.discrete_callbacks))
+        error("BNNODE does not support callbacks, but got: $callback")
+    end
+    return SB.__solve(prob, alg.alg, args...; kwargs...)
+end
+
 # NNODE only supports out-of-place functions `f(u, p ,t)`
 function lotka_volterra(u, p, t)
     ## Model parameters.
@@ -65,8 +95,8 @@ alg = BNNODE(chain;
     progress = false
 )
 
-# Solve the problem
-@time sol_pestim = solve(prob, alg; saveat = dt)
+# Solve the problem (the wrapper works around the `callback` bug described above)
+@time sol_pestim = solve(prob, BNNODECallbackWorkaround(alg); saveat = dt)
 sol_pestim.estimated_de_params
 
 # Visualize the fit
