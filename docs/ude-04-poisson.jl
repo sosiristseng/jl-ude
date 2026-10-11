@@ -30,6 +30,7 @@ using ModelingToolkit
 using DomainSets
 using LineSearches
 using Plots
+import NeuralPDE: GaussLegendre
 
 # 2D PDE
 @parameters x y
@@ -60,8 +61,11 @@ dim = 2
 chain = Lux.Chain(Dense(dim, 16, Lux.σ), Dense(16, 16, Lux.σ), Dense(16, 1))
 
 # Discretization method uses`PhysicsInformedNN()` (PINN).
-dx = 0.05
-discretization = PhysicsInformedNN(chain, QuadratureTraining(; batch = 200, abstol = 1e-6, reltol = 1e-6))
+# Note: since NeuralPDE 7.x, `QuadratureTraining` for PDEs requires a fixed-node
+# quadrature rule, `GaussLegendre(n = k)`, where `n` is the number of nodes per
+# direction (total collocation points = n^dimension). Adaptive rules such as the
+# default `CubatureJLh` only work for ODEs, and tolerance kwargs are ignored for PDEs.
+discretization = PhysicsInformedNN(chain, QuadratureTraining(; quadrature_alg = GaussLegendre(n = 14)))
 
 # Build the PDE system and discretize it.
 @named pde_system = PDESystem(eq, bcs, domains, [x, y], [u(x, y)])
@@ -76,18 +80,20 @@ end
 
 # Solve the problem. You can increase maxiters to get a better solution, but it will take more time.
 opt = OptimizationOptimJL.LBFGS(linesearch = LineSearches.BackTracking())
-@time res = Optimization.solve(prob, opt, callback = callback, maxiters=100)
+@time res = Optimization.solve(prob, opt, callback = callback, maxiters=1000)
 
 #---
 plot(lossrecord, xlabel="Iters", yscale=:log10, ylabel="Loss", lab=false)
 
 # Plot the predicted solution of the PDE and compare it with the analytical solution to see the relative error.
-xs, ys = [DomainSets.infimum(d.domain):dx/10:DomainSets.supremum(d.domain) for d in domains]
+# The solution object directly provides the evaluation grids and the numerical
+# solution: `res[x]` and `res[y]` are the evaluation grids, and `res[u(x, y)]`
+# is the matrix of predicted values on the grid (size `(length(xs), length(ys))`).
 analytic_sol_func(x,y) = (sinpi(x)*sinpi(y))/(2pi^2)
 
-phi = discretization.phi
-u_predict = reshape([first(phi([x, y], res.u)) for x in xs for y in ys], (length(xs), length(ys)))
-u_real = reshape([analytic_sol_func(x, y) for x in xs for y in ys], (length(xs), length(ys)))
+xs, ys = res[x], res[y]
+u_predict = res[u(x, y)]
+u_real = [analytic_sol_func(x, y) for x in xs, y in ys]
 diff_u = abs.(u_predict .- u_real)
 
 #---
