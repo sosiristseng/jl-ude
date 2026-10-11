@@ -2,7 +2,7 @@
 
 julia_version = "1.13.1"
 manifest_format = "2.1"
-project_hash = "ef4fb22d967c25ac1926a24e6c41a174bf67234e"
+project_hash = "ff90a5918f54c72a7620506a0b83951792ebd354"
 
 [[deps.ADTypes]]
 deps = ["PrecompileTools"]
@@ -3377,12 +3377,6 @@ git-tree-sha1 = "7ddb0b49c109481b046972c0e4ab02b2127d6a75"
 registries = "General"
 uuid = "699a6c99-e7fa-54fc-8d76-47d257e15c1d"
 version = "0.9.6"
-
-[[deps.SimpleUnPack]]
-git-tree-sha1 = "58e6353e72cde29b90a69527e56df1b5c3d8c437"
-registries = "General"
-uuid = "ce78b400-467f-4804-87d8-8f486da07d0a"
-version = "1.1.0"
 
 [[deps.Sobol]]
 deps = ["DelimitedFiles", "Random"]
