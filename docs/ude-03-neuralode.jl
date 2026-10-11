@@ -17,19 +17,21 @@ Random.seed!(rng, 42)
 # The true function: $u^{\prime} = cos(2 \pi t)$
 model(u, p, t) = cospi(2t)
 
-# Prepare data
-tspan = (0.0, 1.0)
-u0 = 0.0
+# Prepare data. Everything is kept in `Float32`: `Optimization.jl` trains the parameters
+# in single precision by default, so using `Float64` inputs would trigger a
+# mixed-precision matrix multiplication in `LuxLib`.
+tspan = (0.0f0, 1.0f0)
+u0 = 0.0f0
 prob = ODEProblem(model, u0, tspan)
 
 # Construct a neural network to solve the problem.
 chain = Lux.Chain(Lux.Dense(1, 5, σ), Lux.Dense(5, 1))
-ps, st = Lux.setup(rng, chain) |> Lux.f64
+ps, st = Lux.setup(rng, chain) |> Lux.f32
 
 # Solve the ODE with `NeuralPDE.NNODE()`.
 optimizer = OptimizationOptimisers.Adam(0.1)
 alg = NeuralPDE.NNODE(chain, optimizer, init_params = ps)
-@time sol = solve(prob, alg, maxiters = 2000, saveat = 0.01, verbose = true)
+@time sol = solve(prob, alg, maxiters = 2000, saveat = 0.01f0, verbose = true)
 
 # Comparing to the regular solver
 sol2 = solve(prob, Tsit5(), saveat=sol.t)
