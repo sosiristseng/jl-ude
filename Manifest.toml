@@ -2,7 +2,7 @@
 
 julia_version = "1.13.2"
 manifest_format = "2.1"
-project_hash = "ff90a5918f54c72a7620506a0b83951792ebd354"
+project_hash = "d14b53b71bd3b3eeaa93e5742ac78b53e47e5a84"
 
 [[deps.ADTypes]]
 deps = ["PrecompileTools"]
@@ -807,6 +807,12 @@ weakdeps = ["ChainRulesCore", "EnzymeCore"]
     DispatchDoctorChainRulesCoreExt = "ChainRulesCore"
     DispatchDoctorEnzymeCoreExt = "EnzymeCore"
 
+[[deps.DisplayAs]]
+git-tree-sha1 = "43c017d5dd3a48d56486055973f443f8a39bb6d9"
+registries = "General"
+uuid = "0b91fe84-8a4c-11e9-3e1d-67c38462b6d6"
+version = "0.1.6"
+
 [[deps.Distributed]]
 deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
@@ -1323,6 +1329,13 @@ git-tree-sha1 = "31bb6c92405c084617facc1d7ed9eb6c402d061e"
 registries = "General"
 uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
 version = "0.3.30"
+
+[[deps.IOCapture]]
+deps = ["Logging", "Random"]
+git-tree-sha1 = "0ee181ec08df7d7c911901ea38baf16f755114dc"
+registries = "General"
+uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
+version = "1.0.0"
 
 [[deps.IRTools]]
 deps = ["InteractiveUtils", "MacroTools"]
@@ -1881,6 +1894,13 @@ version = "5.18.2"
     blis_jll = "6136c539-28a5-5bf0-87cc-b183200dce32"
     cuSOLVER = "887afef0-6a32-4de5-add4-7827692ba8fc"
 
+[[deps.Literate]]
+deps = ["Base64", "IOCapture", "JSON", "REPL"]
+git-tree-sha1 = "bb26d8b8ed0fa451ce3511e99c950653a2f31fe1"
+registries = "General"
+uuid = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
+version = "2.21.0"
+
 [[deps.LogDensityProblems]]
 deps = ["ArgCheck", "DocStringExtensions", "Random"]
 git-tree-sha1 = "d9625f27ded4ad726ceca7819394a4cc77ed25b3"
@@ -2162,6 +2182,13 @@ version = "0.1.8"
 deps = ["Base64", "JuliaSyntaxHighlighting", "StyledStrings"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 version = "1.11.0"
+
+[[deps.MarkdownTables]]
+deps = ["ArgCheck", "DisplayAs", "DocStringExtensions", "Tables"]
+git-tree-sha1 = "65dff26519116033543e644fb8cf2e5869469c0b"
+registries = "General"
+uuid = "1862ce21-31c7-451e-824c-f20fa3f90fa2"
+version = "1.1.0"
 
 [[deps.MatrixFactorizations]]
 deps = ["ArrayLayouts", "LinearAlgebra", "Printf", "Random"]
