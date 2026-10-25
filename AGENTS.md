@@ -6,7 +6,7 @@ Tutorial/documentation site for Universal Differential Equations (SciML: DiffEqF
 
 - `docs/ude-*.jl` and `docs/index.jl` are Literate notebooks written in Julia. They are the canonical sources; generated `.ipynb` files and the `.cache/` dir are gitignored and must not be committed.
 - Literate markdown-string format (`mdstrings=true`): `#===` ... `===#` wraps markdown (LaTeX `$...` allowed), `#---` separates code blocks. Follow existing style in `docs/ude-*.jl`.
-- Gitignore does NOT protect against the `ci.jl` footgun: it scans the working tree, so a stale generated `.ipynb` sitting in `docs/` is treated as a source, reverse-converted into the same-named `.jl` (overwriting it), and deleted. Run Literate into a scratch dir if testing, or delete the generated `docs/*.ipynb` before running `ci.jl`.
+- `ci.jl` only accepts `.jl` sources; `.ipynb` files in `docs/` are ignored and left untouched (its `to_literate` reverse-converter is kept but unused, for manual conversions).
 - All notebook deps live in the root `Project.toml`; notebooks `using` them directly. `Startup/` is an empty placeholder sub-project of the Pkg workspace, not a library to write code in.
 
 ## Commands
@@ -17,7 +17,7 @@ Tutorial/documentation site for Universal Differential Equations (SciML: DiffEqF
   `julia --project=@. -p 4 .github/ci.jl` (env vars: `DOCDIR=docs`, `NBCACHE=.cache`)
 - Run a single notebook:
   `julia --project=@. -e 'using Literate; Literate.notebook("docs/ude-01-firstexample.jl", "docs"; mdstrings=true, execute=true)'`
-  (delete the produced `docs/*.ipynb` afterwards — see above)
+  (the generated `docs/*.ipynb` is harmless: gitignored, and `ci.jl` ignores it)
 - No lint/typecheck/test commands exist. There is no local CI shortcut other than running `ci.jl`.
 
 ## Notebook execution gotchas
