@@ -83,7 +83,7 @@ end
 
 # List notebooks without caches in a file tree.
 # Only .jl (Literate) notebooks are accepted; .ipynb files in the docs tree are ignored.
-function list_notebooks(basedir, cachedir)5
+function list_notebooks(basedir, cachedir)
     list = String[]
     for (root, _, files) in walkdir(basedir)
         for file in files
